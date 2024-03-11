@@ -1,13 +1,19 @@
-import React from 'react';
-import Retrospectiva from './Retrospectiva';
 import './cartaoEvento.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import Retrospectiva from './Retrospectiva';
+import Resultados from './Resultado';
 
 function App() {
   return (
-    <div className="App">
-      <Retrospectiva />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Retrospectiva />} />
+        <Route path="/resultado" element={<Resultados />} />
+      </Routes>
+    </Router>
   );
 }
 
 export default App;
+

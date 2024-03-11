@@ -1,125 +1,91 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { format } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
+import { useNavigate } from 'react-router-dom';
 
 const Retrospectiva = () => {
   const [nome, setNome] = useState('');
   const [cidade, setCidade] = useState('');
-  const [dataNascimento, setDataNascimento] = useState('');
   const [eventos, setEventos] = useState([]);
   const [exibindoResultados, setExibindoResultados] = useState(false);
-  const [mostrarRestante, setMostrarRestante] = useState(false);
+  const navigate = useNavigate();
 
   const buscarEventos = async () => {
     try {
-        const dataFormatada = format(new Date(dataNascimento), 'd MMMM', { locale: ptBR });
       const response = await axios.get(
-        `https://pt.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=3&gsrsearch=${dataFormatada}`
+        `https://pt.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=3&gsrsearch=${cidade}`
       );
 
       const pages = response.data.query.pages;
 
       if (Object.keys(pages).length > 0) {
-        const eventos = Object.values(pages).map(async (page) => {
-          const pageResponse = await axios.get(
-            `https://pt.wikipedia.org/w/api.php?action=query&origin=*&format=json&prop=revisions&rvprop=content&pageids=${page.pageid}`
-          );
+        const resultados = await Promise.all(
+          Object.values(pages).map(async (page) => {
+            const { titulo, imagem, descricao } = await buscarInformacoesDetalhadas(page.pageid);
 
-          const content = pageResponse.data.query.pages[page.pageid].revisions[0]['*'];
-
-          // Extrair eventos históricos da seção
-          const eventosHistoricosMatch = content.match(/==\s*Eventos históricos\s*==([\s\S]*?)==/);
-          const eventosHistoricos = eventosHistoricosMatch ? eventosHistoricosMatch[1].trim() : '';
-
-          return {
-            titulo: page.title,
-            imagem: page.thumbnail ? page.thumbnail.source : null,
-            eventosHistoricos,
-          };
-        });
-
-        // Aguardar todas as requisições assíncronas serem concluídas
-        const resultados = await Promise.all(eventos);
+            return {
+              titulo,
+              imagem,
+              descricao,
+            };
+          })
+        );
 
         setEventos(resultados);
         setExibindoResultados(true);
+        navigate('/resultado', { state: { eventos: resultados, nome } });
       } else {
-        setEventos(["Nenhum evento significativo encontrado para o país e data especificadas."]);
+        setEventos([{ titulo: 'Nenhum evento encontrado', imagem: null, descricao: '' }]);
         setExibindoResultados(true);
+        navigate('/resultado', { state: { eventos, nome } });
       }
     } catch (error) {
       console.error('Erro ao buscar eventos:', error);
     }
   };
-  
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setEventos([]);
-    buscarEventos();
+  const buscarInformacoesDetalhadas = async (pageid) => {
+    try {
+      const pageResponse = await axios.get(
+        `https://pt.wikipedia.org/w/api.php?action=query&origin=*&format=json&prop=pageimages|extracts&piprop=original&explaintext=true&pageids=${pageid}`
+      );
+
+      const pageData = pageResponse.data.query.pages[pageid];
+      const titulo = pageData.title;
+      const imagem = pageData.original ? pageData.original.source : null;
+      const descricao = pageData.extract || '';
+
+      return { titulo, imagem, descricao };
+    } catch (error) {
+      console.error('Erro ao buscar informações detalhadas:', error);
+      return { titulo: '', imagem: null, descricao: '' };
+    }
   };
 
-    function cortarDescricao(descricao, limite) {
-        if (descricao.length <= limite) {
-        return descricao;
-        }
-    
-        const ultimaPalavraIndex = descricao.lastIndexOf(' ', limite);
-        const descricaoCortada = descricao.substring(0, ultimaPalavraIndex) + '...';
-  
-    return descricaoCortada;
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await buscarEventos();
+  };
 
-    return (
-        <div className="formularioContainer">
-            <h1>Retrospectiva</h1>
-            <form className="formulario" onSubmit={handleSubmit}>
-                <label>
-                Nome:
-                <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} />
-                </label>
-                <br />
-                <label>
-                País:
-                <input type="text" value={cidade} onChange={(e) => setCidade(e.target.value)} />
-                </label>
-                <br />
-                <label>
-                Data de Nascimento:
-                <input type="date" value={dataNascimento} onChange={(e) => setDataNascimento(e.target.value)} />
-                </label>
-                <br />
-                <button className="botaoFormulario" type="submit">OK</button>
-            </form>
-            
-            {exibindoResultados && (
-                <div className="paginaCentralizada">
-                    <h2 className="tituloCentralizado">Eventos no seu aniversário</h2>
-                    <div className="cartaoEventoContainer">
-                        {eventos.length > 0 ? (
-                            eventos.slice(0, 3).map((evento, index) => (
-                            <div key={index} className="cartaoEvento">
-                                <h3>{evento.titulo}</h3>
-                                {evento.imagem && <img src={evento.imagem} alt={evento.titulo} />}
-                                <p>
-                                    {mostrarRestante ? evento.descricao : cortarDescricao(evento.descricao, 100)}
-                                    {!mostrarRestante && evento.descricao.length > 100 && (
-                                    <button className="mostrarMaisBotao" onClick={() => setMostrarRestante(true)}>Mostrar mais</button>
-                                    )}
-                                    {mostrarRestante && ( 
-                                    <button className="mostrarMenosBotao" onClick={() => setMostrarRestante(false)}>Mostrar menos</button> 
-                                    )}
-                                </p>
-                            </div>
-                            ))
-                        ) : ( <p>Nenhum evento significativo encontrado para a cidade e data especificadas.</p> )}
-                    </div>
-                </div>
-            )}
-
-        </div>
-    );
+  return (
+    <div className="formularioContainer">
+      <h1>Retrospectiva</h1>
+      <form className="formulario" onSubmit={handleSubmit}>
+        <label>
+          Nome:
+          <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} />
+        </label>
+        <br />
+        <label>
+          País:
+          <input type="text" value={cidade} onChange={(e) => setCidade(e.target.value)} />
+        </label>
+        <br />
+        <button className="botaoFormulario" type="submit">
+          OK
+        </button>
+      </form>
+    </div>
+  );
 };
 
 export default Retrospectiva;
