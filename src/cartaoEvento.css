@@ -1,43 +1,103 @@
-.formularioContainer {
+.retrospectivaContainer {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.titulo {
   text-align: center;
-  margin-top: 20px;
+  color: #333;
 }
 
 .formulario {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
-.formulario label {
-  font-size: 18px;
-  margin-bottom: -30px;
-}
-
-.formulario input {
-  width: 100%;
+.labelText {
   padding: 10px;
-  margin-bottom: 15px;
   font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.inputCampo {
+  padding: 10px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+  border-radius: 5px;
+  font-size: 14px;
 }
 
-.formulario button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 12px 20px;
-  font-size: 18px;
+.botaoFormulario {
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 16px;
 }
 
-.formulario button:hover {
+.botaoFormulario:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.retrospectivaContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.retrospectivaConteudo {
+  max-width: 600px;
+  width: 100%;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.tituloCentralizado {
+  text-align: center;
+}
+
+.cartaoEventoContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.cartaoEvento {
+  max-width: 300px;
+  margin: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.mostrarMaisBotao,
+.verDetalhesBotao {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  margin: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.mostrarMaisBotao:hover,
+.verDetalhesBotao:hover {
   background-color: #45a049;
 }
+
 
 .paginaCentralizada {
   display: flex;
@@ -63,7 +123,7 @@
 
 .cartaoEventoContainer {
   display: flex;
-  flex-wrap: wrap; /* Permite que os cartões mudem para a próxima linha se não couberem na largura total da tela */
+  flex-wrap: wrap;
 }
 
 .cartaoEvento {
@@ -92,4 +152,64 @@
 
 .cartaoEvento p {
   margin: 8px 0 0;
+}
+
+.detalhesEventoPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f4f4f4;
+  padding-top: 50px;
+}
+
+.detalhesEventoContainer {
+  background-color: #f4f4f4;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.detalhesEventoContainer img {
+  max-width: 100%;
+  height: auto;
+}
+
+.eventoDescricao {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.voltarLink {
+  display: block;
+  margin-bottom: 10px;
+  color: #3498db;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.voltarContainer {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.voltarLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #3498db;
+}
+
+.iconeCasa {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.destaque-titulo {
+  font-weight: bold;
+  color: #007bff; 
 }

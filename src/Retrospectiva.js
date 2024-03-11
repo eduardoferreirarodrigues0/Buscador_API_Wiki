@@ -4,15 +4,18 @@ import { useNavigate } from 'react-router-dom';
 
 const Retrospectiva = () => {
   const [nome, setNome] = useState('');
-  const [cidade, setCidade] = useState('');
+  const [data, setData] = useState('');
   const [eventos, setEventos] = useState([]);
   const [exibindoResultados, setExibindoResultados] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const buscarEventos = async () => {
     try {
+      setLoading(true);
+
       const response = await axios.get(
-        `https://pt.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=3&gsrsearch=${cidade}`
+        `https://pt.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=3&gsrsearch=${data}`
       );
 
       const pages = response.data.query.pages;
@@ -40,6 +43,8 @@ const Retrospectiva = () => {
       }
     } catch (error) {
       console.error('Erro ao buscar eventos:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,23 +72,37 @@ const Retrospectiva = () => {
   };
 
   return (
-    <div className="formularioContainer">
-      <h1>Retrospectiva</h1>
-      <form className="formulario" onSubmit={handleSubmit}>
-        <label>
-          Nome:
-          <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} />
-        </label>
-        <br />
-        <label>
-          País:
-          <input type="text" value={cidade} onChange={(e) => setCidade(e.target.value)} />
-        </label>
-        <br />
-        <button className="botaoFormulario" type="submit">
-          OK
-        </button>
-      </form>
+    <div className="retrospectivaContainer">
+      <div className="retrospectivaConteudo">
+        <h1 className="titulo">Buscador de informações</h1>
+        <form className="formulario" onSubmit={handleSubmit}>
+          <label>
+            <span className="labelText">Nome:</span>
+            <input
+              type="text"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              placeholder="Digite seu nome"
+              className="inputCampo"
+            />
+          </label>
+          <br />
+          <label>
+            <span className="labelText">O que você gostaria de buscar?</span>
+            <input
+              type="text"
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+              placeholder="Digite sua busca"
+              className="inputCampo"
+            />
+          </label>
+          <br />
+          <button className="botaoFormulario" type="submit" disabled={loading}>
+            {loading ? 'Carregando...' : 'OK'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

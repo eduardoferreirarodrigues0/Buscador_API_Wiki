@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import { useLocation,useNavigate } from 'react-router-dom';
+import casaIcone from './casa-icon.png';
 
 const Resultado = () => {
   const location = useLocation();
   const eventos = location.state?.eventos || [];
   const nome = location.state?.nome || '';
+  const navigate = useNavigate();
 
   const [exibindoResultados] = useState(true);
-  const [mostrarRestante, setMostrarRestante] = useState(false);
+  const resultadosAdicionais = eventos.length > 3 ? eventos.slice(3, 13) : [];
+
 
   useEffect(() => {
     document.title = `Resultado para ${nome}`;
@@ -16,6 +19,9 @@ const Resultado = () => {
 
   const cortarDescricao = (descricao, tamanho) => {
     return descricao.length > tamanho ? `${descricao.slice(0, tamanho)}...` : descricao;
+  };
+  const mostrarDetalhes = (evento) => {
+    navigate('/detalhes-evento', { state: { evento } });
   };
 
   return (
@@ -30,18 +36,9 @@ const Resultado = () => {
                   <h3>{evento.titulo}</h3>
                   {evento.imagem && <img src={evento.imagem} alt={evento.titulo} />}
                   <p>
-                    {mostrarRestante ? evento.descricao : cortarDescricao(evento.descricao, 100)}
-                    {!mostrarRestante && evento.descricao.length > 100 && (
-                      <button className="mostrarMaisBotao" onClick={() => setMostrarRestante(true)}>
-                        Mostrar mais
-                      </button>
-                    )}
-                    {mostrarRestante && (
-                      <button className="mostrarMenosBotao" onClick={() => setMostrarRestante(false)}>
-                        Mostrar menos
-                      </button>
-                    )}
+                    {cortarDescricao(evento.descricao, 100)}
                   </p>
+                  <button className="verDetalhesBotao" onClick={() => mostrarDetalhes(evento)}>Ver Detalhes</button>
                 </div>
               ))
             ) : (
@@ -50,7 +47,16 @@ const Resultado = () => {
           </div>
         </div>
       )}
-      <Link to="/">Voltar para a página inicial</Link>
+          <button
+            className="mostrarMaisBotao"
+            onClick={() => navigate('/mais-resultados', { state: { eventos: resultadosAdicionais } })}>
+            Ver mais resultados
+          </button>
+      <div className="voltarContainer">
+            <Link to="/" className="voltarLink">
+              <img src={casaIcone} alt="Home" className="iconeCasa" />
+            </Link>
+          </div>
     </div>
   );
 };
