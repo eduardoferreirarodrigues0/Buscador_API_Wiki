@@ -10,7 +10,8 @@ const Resultado = () => {
   const navigate = useNavigate();
 
   const [exibindoResultados] = useState(true);
-  const resultadosAdicionais = eventos.length > 3 ? eventos.slice(3, 13) : [];
+  const resultadosAdicionais = eventos.slice(6);
+  console.log('Dados para MaisResultados:', resultadosAdicionais);
 
 
   useEffect(() => {
@@ -31,7 +32,7 @@ const Resultado = () => {
           <h2 className="tituloCentralizado">Olá {nome}, este é o resultado da sua pesquisa:</h2>
           <div className="cartaoEventoContainer">
             {eventos.length > 0 ? (
-              eventos.slice(0, 3).map((evento, index) => (
+              eventos.slice(0, 6).map((evento, index) => (
                 <div key={index} className="cartaoEvento">
                   <h3>{evento.titulo}</h3>
                   {evento.imagem && <img src={evento.imagem} alt={evento.titulo} />}
@@ -42,7 +43,7 @@ const Resultado = () => {
                 </div>
               ))
             ) : (
-              <p>Nenhum evento significativo encontrado para a cidade.</p>
+              <p>Nenhum resultado significativo encontrado para você.</p>
             )}
           </div>
         </div>
@@ -52,7 +53,7 @@ const Resultado = () => {
             onClick={() => navigate('/mais-resultados', { state: { eventos: resultadosAdicionais } })}>
             Ver mais resultados
           </button>
-      <div className="voltarContainer">
+          <div className="voltarContainer">
             <Link to="/" className="voltarLink">
               <img src={casaIcone} alt="Home" className="iconeCasa" />
             </Link>

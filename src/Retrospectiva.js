@@ -15,7 +15,7 @@ const Retrospectiva = () => {
       setLoading(true);
 
       const response = await axios.get(
-        `https://pt.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=3&gsrsearch=${data}`
+        `https://pt.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=15&gsrsearch=${data}`
       );
 
       const pages = response.data.query.pages;
@@ -74,7 +74,7 @@ const Retrospectiva = () => {
   return (
     <div className="retrospectivaContainer">
       <div className="retrospectivaConteudo">
-        <h1 className="titulo">Buscador de informações</h1>
+        <h1 className="titulo">Buscador</h1>
         <form className="formulario" onSubmit={handleSubmit}>
           <label>
             <span className="labelText">Nome:</span>
